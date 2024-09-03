@@ -18,10 +18,10 @@
         }
     ],
 
-    "permissions": ["tabs", "windows", "activeTab"],
+    "permissions": ["tabs", "windows", "activeTab", "storage"],
 
     "content_scripts": [{
-        "js": ["scripts/main.js"],
+        "js": ["main.js"],
         "matches": [
             "<all_urls>"
         ]
