@@ -7,7 +7,7 @@ There are three main features
 + Show dictionary content for single word, which is suitable for new language learner. This feature is turned off by default.
 
 <center class="half">
-    <img src="images/readme-demo-1.png" width="500"/><img src="images/readme-demo-2.png" width="500"/>
+    <img src="images/readme-demo-1.png" width="300"/><img src="images/readme-demo-2.png" width="300"/>
 </center>
 
 [![demo](readme-demo-1.png)](images/show-readme-demo.mov)
