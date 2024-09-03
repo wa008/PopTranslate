@@ -10,7 +10,8 @@ There are three main features
     <img src="images/readme-demo-1.png" width="300"/><img src="images/readme-demo-2.png" width="300"/>
 </center>
 
-[![demo](readme-demo-1.png)](images/show-readme-demo.mov)
+
+https://github.com/user-attachments/assets/18ae5106-b499-45fe-aa9f-ef68fee4eb06
 
 
 # Realize
