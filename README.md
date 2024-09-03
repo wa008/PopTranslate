@@ -10,8 +10,7 @@ There are three main features
     <img src="images/readme-demo-1.png" width="300"/><img src="images/readme-demo-2.png" width="300"/>
 </center>
 
-
-https://github.com/user-attachments/assets/18ae5106-b499-45fe-aa9f-ef68fee4eb06
+https://github.com/user-attachments/assets/b34098fd-0a6f-4b52-9c01-10ab57b2ab34
 
 
 # Realize
