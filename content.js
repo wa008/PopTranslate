@@ -1,6 +1,20 @@
 var window_id = -1;
 var previous_selection = "";
 console.log(window.navigator.language);
+const language_map = new Map([
+    ["en", "English"],
+    ["zh-CN", "Chinese (Simplified)"],
+    ["es", "Spanish"],
+    ["fr", "French"],
+    ["de", "German"],
+    ["ja", "Japanese"],
+    ["pt", "Portuguese"],
+    ["ru", "Russian"],
+    ["ar", "Arabic"],
+    ["ko", "Korean"],
+    ["it", "Italian"],
+    ["nl", "Dutch"]
+]);
 
 // load local key
 async function getLocalParameter(url) {
@@ -63,10 +77,10 @@ function isInTargetDiv(evt) {
 }
 
 async function requestTranslation(selection, target_language) {
-    let gitignore_path = chrome.runtime.getURL(".gitignore")
+    let gitignore_path = chrome.runtime.getURL(".gitignore");
     console.log('gitignore_path ' + gitignore_path);
     console.log('target_language ' + target_language);
-    res_json = await getLocalParameter(gitignore_path)
+    res_json = await getLocalParameter(gitignore_path);
     google_translation_api_key = res_json['google_translation_api_key'];
     let url = "https://translation.googleapis.com/language/translate/v2?key=" + google_translation_api_key;  // Modified
     console.log(url);
@@ -95,6 +109,25 @@ const readLocalStorage = async (key) => {
     });
 };
 
+// dictionary https://dictionaryapi.dev/
+async function get_output_from_word_translation(selection) {
+    let word_request_url = 'https://api.dictionaryapi.dev/api/v2/entries/en/' + selection
+    let response = await fetch(word_request_url, { method: "GET" });
+    let response_json = await response.json();
+
+    var output = "<b>" + selection + "&nbsp;" + response_json[0]['phonetic'] + "</b>" + "<br>"
+    limitation_per_partOfSpeech = 3;
+    for (var i = 0; i < response_json[0]['meanings'].length; i++) { 
+        let currenct = response_json[0]['meanings'][i];
+        for (var j = 0; j < Math.min(limitation_per_partOfSpeech, currenct['definitions'].length); j++) {
+            let definition = currenct['definitions'][j]['definition'];
+            output += "[" + currenct['partOfSpeech'] + "]&nbsp;" + definition + "<br>"
+        }
+    }
+    output += "<a href=" + word_request_url + ">More>></a>";
+    return output;
+}
+
 
 window.addEventListener('mouseup', function (evt) {
     console.log('mouseup');
@@ -103,28 +136,65 @@ window.addEventListener('mouseup', function (evt) {
         console.log("select message: " + selection);
         previous_selection = selection;
         (async() => {
-            // 从存储中获取选中的语言 
-            let target_language = 'en';
-            let local_target_language = await readLocalStorage('selectedLanguage');
-            if (local_target_language.length >= 2) {
-                console.log('read from local language ' + local_target_language);
-                target_language = local_target_language;
+            // get language from local storage
+            var target_language = 'zh-CN';
+            try {
+                let local_target_language = await readLocalStorage('selectedLanguage');
+                if (local_target_language.length >= 2) {
+                    console.log('read from local language ' + local_target_language);
+                    target_language = local_target_language;
+                }
+            }
+            catch(err) {            
+                console.log('get local language error');
             }
             console.log('target_language ' + target_language);
             let response_json = await requestTranslation(selection, target_language);
             console.log(response_json);
             translation = response_json['data']['translations'][0]['translatedText'];
             raw_language = response_json['data']['translations'][0]['detectedSourceLanguage'];
+
+            // single word
+            if (!selection.includes(' ')) {
+                console.log('one word');          
+                var dictionaryFeature = false;
+                try {
+                    let localDictionaryFeature = await readLocalStorage('dictionaryFeature');
+                    if (localDictionaryFeature !== undefined) {
+                        console.log('localDictionaryFeature ' + localDictionaryFeature);
+                        dictionaryFeature = localDictionaryFeature;
+                    }
+                }
+                catch(err) {
+                    console.log('get localDictionaryFeature error');
+                }
+                
+                // process single word
+                if (dictionaryFeature === true) {
+                    openOverlay();
+                    try {
+                        let output = await get_output_from_word_translation(selection);
+                        translation = output;
+                    }
+                    catch(err) {
+                        console.log('get localDictionaryFeature error');
+                    }
+                }
+            }
+            // show
             if (raw_language != target_language) {
-                openOverlay();
-                let prefix = raw_language + " -> " + target_language + "<br>"
+                openOverlay();                
+                if (!language_map.has(language_map)) {
+                    language_map.set(language_map, language_map);
+                }
+                // let suffix = language_map.get(raw_language) + " -> " + language_map.get(target_language)
                 console.log('target_language ' + target_language);
-                document.getElementById("my_overlay").innerHTML = prefix + translation;
+                document.getElementById("my_overlay").innerHTML = translation; // + "<br>" + suffix;
                 console.log(translation);
             } else {
                 console.log('same language: ' + raw_language);
             }
-        })()
+        })();
     }
 });
 

@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "Reading time",
+    "name": "Poptranslate",
     "version": "1.0",
-    "description": "Add the reading time to Chrome Extension documentation articles",
+    "description": "Instantly display translations by selecting text, no extra clicks needed, Making translation more intuitive and efficient.",
 
     "icons": {
         "16": "images/icon-16.png",
@@ -18,10 +18,10 @@
         }
     ],
 
-    "permissions": ["tabs", "windows", "activeTab", "storage"],
+    "permissions": ["storage"],
 
     "content_scripts": [{
-        "js": ["main.js"],
+        "js": ["content.js"],
         "matches": [
             "<all_urls>"
         ]

@@ -5,31 +5,40 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            font-size: 14px; /* 统一字体大小 */
+            font-size: 14px; /* Unified font size */
             margin: 20px;
-            width: 220px; /* 整体宽度调整为 220px */
-            text-align: center; /* 设置文本居中 */
+            width: 220px; /* Overall width adjusted to 220px */
+            text-align: center; /* Center text alignment */
         }
-        .language-selection {
+        .language-selection,
+        .dictionary-feature {
             display: flex;
             align-items: center;
-            justify-content: center; /* 水平居中对齐 */
+            justify-content: space-between; /* Distribute content on the left and right sides */
             margin-top: 10px;
+            width: 200px; /* Fixed width */
+            margin-left: 0px; 
+            margin-right: 0px; 
         }
-        label {
-            flex: 1.5; /* 增加标签所占比例，使其一行展示 */
-            margin-right: 10px;
+        .language-selection label,
+        .dictionary-feature label {
+            width: 120px; /* Fixed width */
+            text-align: left; /* Text aligned to the left */
         }
-        select {
-            flex: 1;
-            width: 80px; /* 选择框宽度 */
-            padding: 5px;
-            font-size: 14px; /* 确保选择框中的字体大小一致 */
+        .language-selection select {
+            width: 80px; /* Fixed width */
+            height: 23px; /* Fixed height */
+        }
+        .dictionary-feature input[type="checkbox"] {
+            width: 20px; /* Fixed width */
+            height: 20px; /* Fixed height */
+            position: absolute; /* Absolute positioning */
+            left: 170px; /* Set position to move the checkbox to the left */
         }
     </style>
 </head>
 <body>
-    <h3>Direct Translation</h3> <!-- 添加标题 -->
+    <h3>PopTranslate</h3> <!-- Add title -->
     <div class="language-selection">
         <label for="targetLanguage">Target Language:</label>
         <select id="targetLanguage">
@@ -48,6 +57,10 @@
             <!-- Add more languages as needed -->
         </select>
     </div>
-    <script src="popup.js"></script> <!-- 引用外部JavaScript文件 -->
+    <div class="dictionary-feature">
+        <label for="dictionaryFeature">Dictionary feature: </label>
+        <input type="checkbox" id="dictionaryFeature">
+    </div>
+    <script src="popup.js"></script> <!-- Include external JavaScript file -->
 </body>
 </html>
