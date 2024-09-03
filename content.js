@@ -1,6 +1,6 @@
 var window_id = -1;
 var previous_selection = "";
-console.log(window.navigator.language);
+
 const language_map = new Map([
     ["en", "English"],
     ["zh-CN", "Chinese (Simplified)"],
@@ -15,6 +15,7 @@ const language_map = new Map([
     ["it", "Italian"],
     ["nl", "Dutch"]
 ]);
+var last_click_for_reqeust = Date.now();
 
 // load local key
 async function getLocalParameter(url) {
@@ -28,7 +29,6 @@ async function getLocalParameter(url) {
 
 // creat div show
 function CreateDiv(){
-    console.log("Created begin");
     var div = document.createElement("div");
     div.id = 'my_overlay'
     div.style.position = "fixed";
@@ -38,6 +38,7 @@ function CreateDiv(){
     div.style.top = '10px';
     div.style.right = '10px';
     div.style.backgroundColor = "rgba(255,255,255,1)";
+    div.style.color = 'rgba(0,0,0,1)';
     div.style.zIndex = "999999999";
     div.style.padding = "10px"; // 增加内边距
     div.style.overflow = "auto"; // 允许内容滚动
@@ -47,25 +48,25 @@ function CreateDiv(){
 
     div.innerHTML = "Loading...";
     document.body.insertBefore(div, document.body.firstChild);
-    console.log("Created end");
 }
 CreateDiv();
 
+// show div
 function openOverlay(){
     if (document.getElementById("my_overlay").style.display != "block") {
-        console.log("open overlay!");
         document.getElementById("my_overlay").style.display = "block";
     }
 };
 
+// close div
 function removeOverlay(){
     if (document.getElementById("my_overlay").style.display != "none") {
-        console.log("Removing overlay!");
         document.getElementById("my_overlay").style.display = "none";
         document.getElementById("my_overlay").innerHTML = "Loading...";
     }
 };
 
+// judge click is in range of div
 function isInTargetDiv(evt) {
     var rect = document.getElementById("my_overlay").getBoundingClientRect();
     if (evt.clientY >= rect.top && evt.clientY <= rect.bottom && 
@@ -76,15 +77,12 @@ function isInTargetDiv(evt) {
     }
 }
 
+// request google api to get translation
 async function requestTranslation(selection, target_language) {
     let gitignore_path = chrome.runtime.getURL(".gitignore");
-    console.log('gitignore_path ' + gitignore_path);
-    console.log('target_language ' + target_language);
     res_json = await getLocalParameter(gitignore_path);
-    google_translation_api_key = res_json['google_translation_api_key'];
-    let url = "https://translation.googleapis.com/language/translate/v2?key=" + google_translation_api_key;  // Modified
-    console.log(url);
-    console.log('debug 1' + selection);
+    unknown_variable = atob(res_json['unknown_variable']);
+    let url = "https://translation.googleapis.com/language/translate/v2?key=" + unknown_variable;  // Modified
     let response = await fetch(url, {
         method: "POST",
         body: JSON.stringify({  // Modified 
@@ -92,11 +90,11 @@ async function requestTranslation(selection, target_language) {
             q: selection
         }),
     });
-    console.log('debug requet end');
     let response_json = await response.json();
     return response_json;
 }
 
+// read local parameter
 const readLocalStorage = async (key) => {
     return new Promise((resolve, reject) => {
         chrome.storage.local.get([key], function (result) {
@@ -109,7 +107,7 @@ const readLocalStorage = async (key) => {
     });
 };
 
-// dictionary https://dictionaryapi.dev/
+// request dictionary, Thanks https://dictionaryapi.dev/
 async function get_output_from_word_translation(selection) {
     let word_request_url = 'https://api.dictionaryapi.dev/api/v2/entries/en/' + selection
     let response = await fetch(word_request_url, { method: "GET" });
@@ -128,12 +126,11 @@ async function get_output_from_word_translation(selection) {
     return output;
 }
 
-
+// trigger when mouse up
 window.addEventListener('mouseup', function (evt) {
-    console.log('mouseup');
+    var current_click_for_request = Date.now();
     let selection = window.getSelection().toString();
     if (isInTargetDiv(evt) == false && selection.length > 0 && selection != ' ') {
-        console.log("select message: " + selection);
         previous_selection = selection;
         (async() => {
             // get language from local storage
@@ -141,27 +138,22 @@ window.addEventListener('mouseup', function (evt) {
             try {
                 let local_target_language = await readLocalStorage('selectedLanguage');
                 if (local_target_language.length >= 2) {
-                    console.log('read from local language ' + local_target_language);
                     target_language = local_target_language;
                 }
             }
             catch(err) {            
                 console.log('get local language error');
             }
-            console.log('target_language ' + target_language);
             let response_json = await requestTranslation(selection, target_language);
-            console.log(response_json);
             translation = response_json['data']['translations'][0]['translatedText'];
             raw_language = response_json['data']['translations'][0]['detectedSourceLanguage'];
 
             // single word
-            if (!selection.includes(' ')) {
-                console.log('one word');          
+            if (!selection.includes(' ') && raw_language === 'en') {
                 var dictionaryFeature = false;
                 try {
                     let localDictionaryFeature = await readLocalStorage('dictionaryFeature');
                     if (localDictionaryFeature !== undefined) {
-                        console.log('localDictionaryFeature ' + localDictionaryFeature);
                         dictionaryFeature = localDictionaryFeature;
                     }
                 }
@@ -173,6 +165,7 @@ window.addEventListener('mouseup', function (evt) {
                 if (dictionaryFeature === true) {
                     openOverlay();
                     try {
+                        await new Promise(r => setTimeout(r, 2000));
                         let output = await get_output_from_word_translation(selection);
                         translation = output;
                     }
@@ -182,29 +175,19 @@ window.addEventListener('mouseup', function (evt) {
                 }
             }
             // show
-            if (raw_language != target_language) {
-                openOverlay();                
-                if (!language_map.has(language_map)) {
-                    language_map.set(language_map, language_map);
-                }
+            if (raw_language != target_language && current_click_for_request > last_click_for_reqeust) {
+                openOverlay();
                 // let suffix = language_map.get(raw_language) + " -> " + language_map.get(target_language)
-                console.log('target_language ' + target_language);
                 document.getElementById("my_overlay").innerHTML = translation; // + "<br>" + suffix;
-                console.log(translation);
-            } else {
-                console.log('same language: ' + raw_language);
+                last_click_for_reqeust = current_click_for_request;
             }
         })();
     }
 });
 
+// close div when mouse up
 window.addEventListener('mousedown', function (evt) {
-    if (isInTargetDiv(evt)) {
-        console.log('in rect');
-    } else {
-        console.log('out rect');
-        console.log('mousedown'); 
+    if (!isInTargetDiv(evt)) {
         removeOverlay();
     }
 });
-
