@@ -165,7 +165,6 @@ window.addEventListener('mouseup', function (evt) {
                 if (dictionaryFeature === true) {
                     openOverlay();
                     try {
-                        await new Promise(r => setTimeout(r, 2000));
                         let output = await get_output_from_word_translation(selection);
                         translation = output;
                     }
