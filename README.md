@@ -27,6 +27,7 @@ Any suggestions and feedback are welcome.
 - [ ] Optimize request order: for work, it's not necessary to request google api
 - [ ] More languages support for dictionary: English is only language to support temporary.
 - [ ] Fix bugs: This is not a mature product, it need more time to find bug and fix them.
+- [ ] current dictionary api is a little slow...
 
 # Thanks
 + [Free Dictionary API](https://dictionaryapi.dev)
