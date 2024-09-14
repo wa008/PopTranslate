@@ -14,6 +14,9 @@ There are three main features
 
 https://github.com/user-attachments/assets/b34098fd-0a6f-4b52-9c01-10ab57b2ab34
 
+# Install
+
+Install Link: https://chromewebstore.google.com/detail/poptranslate/moejenjdfpgijcnbddoeokjflkfighla
 
 # Realize
 The translation function is from Google api. 
