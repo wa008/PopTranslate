@@ -18,7 +18,7 @@ https://github.com/user-attachments/assets/b34098fd-0a6f-4b52-9c01-10ab57b2ab34
 
 Install Link: https://chromewebstore.google.com/detail/poptranslate/moejenjdfpgijcnbddoeokjflkfighla
 
-# Realize
+# Realization
 The translation function is from Google api. 
 
 Dictionary is from [Free Dictionary API](https://dictionaryapi.dev), Thanks a lot.
