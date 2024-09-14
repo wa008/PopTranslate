@@ -1,8 +1,8 @@
 # Introduction
-A chrome extension that instantly translation by selecting text without any other click, no extra clicks needed, Making translation more intuitive and efficient.
+A chrome extension that instantly pop translation by selecting text without any other click, no extra clicks needed, Making translation more intuitive and efficient.
 
 There are three main features
-+ Translate immediately after selecting text, don't need to click the icon like other translation extension.
++ Pop translation immediately after selecting text, don't need to click the icon like other translation extension.
 + Pop a frame in top right corner of current window to show the translation, which don't cover the contens you are browsering
 + Show dictionary content for single word, which is suitable for new language learner. This feature is turned off by default.
 
