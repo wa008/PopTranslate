@@ -24,6 +24,7 @@ Any suggestions and feedback are welcome.
 
 
 # TODO
+- [ ] Add block option for specific website or domain, like github.
 - [ ] Optimize request order: for work, it's not necessary to request google api
 - [ ] More languages support for dictionary: English is only language to support temporary.
 - [ ] Fix bugs: This is not a mature product, it need more time to find bug and fix them.
