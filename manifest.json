@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "PopTranslate",
-    "version": "1.0",
+    "version": "1.1",
     "description": "Instantly display translations by selecting text, no extra clicks needed, Making translation more intuitive and efficient.",
 
     "icons": {
@@ -13,7 +13,7 @@
     
     "web_accessible_resources": [
         {
-            "resources": [ ".gitignore" ],
+            "resources": [ "env.gitignore" ],
             "matches": [ "<all_urls>" ]
         }
     ],

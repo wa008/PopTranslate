@@ -3,7 +3,7 @@ A chrome extension that instantly pop translation by selecting text without any 
 
 There are three main features
 + Pop translation immediately after selecting text, don't need to click the icon like other translation extension.
-+ Pop a frame in top right corner of current window to show the translation, which don't cover the contens you are browsering
++ Pop a frame in top right corner of current window to show the translation, which don't cover the contents you are browsing
 + Show dictionary content for single word, which is suitable for new language learner. This feature is turned off by default.
 
 
@@ -25,6 +25,9 @@ Dictionary is from [Free Dictionary API](https://dictionaryapi.dev), Thanks a lo
 
 Any suggestions and feedback are welcome.
 
+# verison
+1.0: first verison
+1.1: add target language translate when dictionary open
 
 # TODO
 - [ ] Add block option for specific website or domain, like github.

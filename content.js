@@ -79,7 +79,7 @@ function isInTargetDiv(evt) {
 
 // request google api to get translation
 async function requestTranslation(selection, target_language) {
-    let gitignore_path = chrome.runtime.getURL(".gitignore");
+    let gitignore_path = chrome.runtime.getURL("env.gitignore");
     res_json = await getLocalParameter(gitignore_path);
     unknown_variable = atob(res_json['unknown_variable']);
     let url = "https://translation.googleapis.com/language/translate/v2?key=" + unknown_variable;  // Modified
@@ -166,7 +166,7 @@ window.addEventListener('mouseup', function (evt) {
                     openOverlay();
                     try {
                         let output = await get_output_from_word_translation(selection);
-                        translation = output;
+                        translation += "<br>" + output; // show target language && dictionary
                     }
                     catch(err) {
                         console.log('get localDictionaryFeature error');
