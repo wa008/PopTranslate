@@ -27,6 +27,7 @@ Any suggestions and feedback are welcome.
 
 # verison
 1.0: first verison
+
 1.1: add target language translate when dictionary open
 
 # TODO
