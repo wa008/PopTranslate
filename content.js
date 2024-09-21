@@ -28,7 +28,7 @@ async function getLocalParameter(url) {
 }
 
 // creat div show
-function CreateDiv(){
+function CreateDiv() {
     var div = document.createElement("div");
     div.id = 'my_overlay'
     div.style.position = "fixed";
@@ -45,11 +45,12 @@ function CreateDiv(){
     div.style.resize = 'vertical'; // make div scalable
     div.style.overflow = 'auto'; // make div scalable
     div.style.boxShadow = "1px 1px 10px 5px gray" // 阴影
-
     div.innerHTML = "Loading...";
     document.body.insertBefore(div, document.body.firstChild);
 }
-CreateDiv();
+if (document.getElementById("my_overlay") === undefined) {
+    CreateDiv();
+}
 
 // show div
 function openOverlay(){
@@ -126,11 +127,40 @@ async function get_output_from_word_translation(selection) {
     return output;
 }
 
+function check_valid_selection(selection) {
+    if (selection.length > 2) return true;
+    if (selection.length <= 0) return false;
+    selection.length > 0 && selection != ' '
+    const spe_list = ["[", "`", "!", "@", "#", "$", "%", "^", "&", "*", 
+        "(", ")", "_", "+", "-", "=", "[", "\\", "]", "{", "}", ";", "'", ":", '"', "|", ",", ".", 
+        "<", ">", "/", "?", "~", "]", " "];
+    for (const element of spe_list) {
+        if (selection.includes(element)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
 // trigger when mouse up
 window.addEventListener('mouseup', function (evt) {
     var current_click_for_request = Date.now();
+    // console.log("window.getSelection(): ", window.getSelection());
+    // console.log("window.getSelection().tostring(): ", window.getSelection().toString());
+    // let {anchorNode, anchorOffset, focusNode, focusOffset} = window.getSelection();
+    // console.log(anchorNode);
+    // console.log("window.getSelection().anchorNode.innerText: ", window.getSelection().anchorNode.innerText);
+    // console.log("window.getSelection().anchorNode.baseURI: ", window.getSelection().anchorNode.baseURI);
     let selection = window.getSelection().toString();
-    if (isInTargetDiv(evt) == false && selection.length > 0 && selection != ' ') {
+    let baseURI = window.getSelection().anchorNode.baseURI;
+    let anchorNodeInnerText = window.getSelection().anchorNode.innerText;
+    if (anchorNodeInnerText !== undefined && baseURI.includes('www.reddit.com')) { // speical process for reddit comment
+        selection = anchorNodeInnerText;
+    }
+    var seletion_flag = check_valid_selection(selection);
+    // console.log("seletion_flag: ", seletion_flag, "selection: ", selection);
+    if (seletion_flag === true && isInTargetDiv(evt) == false) {
         previous_selection = selection;
         (async() => {
             // get language from local storage
@@ -186,6 +216,10 @@ window.addEventListener('mouseup', function (evt) {
 
 // close div when mouse up
 window.addEventListener('mousedown', function (evt) {
+    if (document.getElementById("my_overlay") === null) { // creat new div when there isn't, becuase chatGPT.com will delete my div, maybe this's related to generated website
+        CreateDiv();
+    }
+    
     if (!isInTargetDiv(evt)) {
         removeOverlay();
     }
