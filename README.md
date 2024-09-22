@@ -29,8 +29,10 @@ Any suggestions and feedback are welcome.
 + 1.0: first verison
 + 1.1: add target language translate when dictionary open
 + 1.2: fix bugs. 1) works on chatgpt.com 2) works on reddit comments 3) keep slience for special characters
++ 2.0: add features. 1) adding switch for this extension. 2) Making manually adjusted height persist.
 
 # TODO
+- [x] To make manually adjusted height of translate windows persist.
 - [ ] Fix bugs: This is not a mature product, it need more time to find bug and fix them.
 - [ ] Add block option for specific website or domain, like github.
 - [ ] More languages support for dictionary: English is only language to support temporary.

@@ -1,5 +1,6 @@
 var window_id = -1;
 var previous_selection = "";
+var flag_update_shape_of_div = false;
 
 const language_map = new Map([
     ["en", "English"],
@@ -28,13 +29,15 @@ async function getLocalParameter(url) {
 }
 
 // creat div show
-function CreateDiv() {
+async function CreateDiv() {
+    let heightOfDiv = await readLocalStorage('heightOfDiv', "20%");
+
     var div = document.createElement("div");
     div.id = 'my_overlay'
     div.style.position = "fixed";
     div.style.display = "none";
     div.style.width = "20%";
-    div.style.height = "20%";
+    div.style.height = heightOfDiv;
     div.style.top = '10px';
     div.style.right = '10px';
     div.style.backgroundColor = "rgba(255,255,255,1)";
@@ -48,8 +51,11 @@ function CreateDiv() {
     div.innerHTML = "Loading...";
     document.body.insertBefore(div, document.body.firstChild);
 }
+
 if (document.getElementById("my_overlay") === undefined) {
-    CreateDiv();
+    (async() => {
+        CreateDiv();
+    })();
 }
 
 // show div
@@ -78,6 +84,18 @@ function isInTargetDiv(evt) {
     }
 }
 
+// try to udpate the shape of div
+function updateShapeOfDiv() {
+    var current_height = document.getElementById("my_overlay").getBoundingClientRect().height;
+    let current_related_height = ((current_height / window.innerHeight * 100) | 0);
+    if (current_related_height > 95) {
+        current_related_height = 95;
+    }
+    let current_related_height_str = current_related_height + "%"
+    chrome.storage.local.set({ 'heightOfDiv': current_related_height_str });
+}
+
+
 // request google api to get translation
 async function requestTranslation(selection, target_language) {
     let gitignore_path = chrome.runtime.getURL("env.gitignore");
@@ -96,11 +114,12 @@ async function requestTranslation(selection, target_language) {
 }
 
 // read local parameter
-const readLocalStorage = async (key) => {
+const readLocalStorage = async (key, default_value = undefined) => {
     return new Promise((resolve, reject) => {
         chrome.storage.local.get([key], function (result) {
             if (result[key] === undefined) {
-                reject();
+                // reject();
+                resolve(default_value);
             } else {
                 resolve(result[key]);
             }
@@ -142,10 +161,12 @@ function check_valid_selection(selection) {
     return true;
 }
 
-
 // trigger when mouse up
 window.addEventListener('mouseup', function (evt) {
     var current_click_for_request = Date.now();
+    if (flag_update_shape_of_div === true) {
+        updateShapeOfDiv();
+    }
     // console.log("window.getSelection(): ", window.getSelection());
     // console.log("window.getSelection().tostring(): ", window.getSelection().toString());
     // let {anchorNode, anchorOffset, focusNode, focusOffset} = window.getSelection();
@@ -160,37 +181,22 @@ window.addEventListener('mouseup', function (evt) {
     }
     var seletion_flag = check_valid_selection(selection);
     // console.log("seletion_flag: ", seletion_flag, "selection: ", selection);
-    if (seletion_flag === true && isInTargetDiv(evt) == false) {
+    if (seletion_flag === true && isInTargetDiv(evt) === false) {
         previous_selection = selection;
         (async() => {
+            let extensionOn = await readLocalStorage('extensionOn', true);
+            if (extensionOn !== true) {
+                return ;
+            }
             // get language from local storage
-            var target_language = 'zh-CN';
-            try {
-                let local_target_language = await readLocalStorage('selectedLanguage');
-                if (local_target_language.length >= 2) {
-                    target_language = local_target_language;
-                }
-            }
-            catch(err) {            
-                console.log('get local language error');
-            }
+            var target_language = await readLocalStorage('selectedLanguage', 'zh-CN');
             let response_json = await requestTranslation(selection, target_language);
             translation = response_json['data']['translations'][0]['translatedText'];
             raw_language = response_json['data']['translations'][0]['detectedSourceLanguage'];
 
             // single word
             if (!selection.includes(' ') && raw_language === 'en') {
-                var dictionaryFeature = false;
-                try {
-                    let localDictionaryFeature = await readLocalStorage('dictionaryFeature');
-                    if (localDictionaryFeature !== undefined) {
-                        dictionaryFeature = localDictionaryFeature;
-                    }
-                }
-                catch(err) {
-                    console.log('get localDictionaryFeature error');
-                }
-                
+                var dictionaryFeature = await readLocalStorage('dictionaryFeature', false);
                 // process single word
                 if (dictionaryFeature === true) {
                     openOverlay();
@@ -217,10 +223,16 @@ window.addEventListener('mouseup', function (evt) {
 // close div when mouse up
 window.addEventListener('mousedown', function (evt) {
     if (document.getElementById("my_overlay") === null) { // creat new div when there isn't, becuase chatGPT.com will delete my div, maybe this's related to generated website
-        CreateDiv();
+        (async() => {
+            CreateDiv();
+        })();
     }
     
     if (!isInTargetDiv(evt)) {
+        flag_update_shape_of_div = false;
         removeOverlay();
+    } else {
+        flag_update_shape_of_div = true;
     }
 });
+// gray

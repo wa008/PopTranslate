@@ -10,6 +10,7 @@
             width: 220px; /* Overall width adjusted to 220px */
             text-align: center; /* Center text alignment */
         }
+        .extension-on,
         .language-selection,
         .dictionary-feature {
             display: flex;
@@ -20,6 +21,7 @@
             margin-left: 0px; 
             margin-right: 0px; 
         }
+        .extension-on label,
         .language-selection label,
         .dictionary-feature label {
             width: 120px; /* Fixed width */
@@ -29,6 +31,7 @@
             width: 80px; /* Fixed width */
             height: 23px; /* Fixed height */
         }
+        .extension-on input[type="checkbox"],
         .dictionary-feature input[type="checkbox"] {
             width: 20px; /* Fixed width */
             height: 20px; /* Fixed height */
@@ -39,7 +42,11 @@
 </head>
 <body>
     <h3>PopTranslate</h3> <!-- Add title -->
-    <div class="language-selection">
+    <div class="extension-on">
+        <label for="extensionOn">Extension Open: </label>
+        <input type="checkbox" id="extensionOn">
+    </div>
+    <div class="language-selection" id="language-selection-line">
         <label for="targetLanguage">Target Language:</label>
         <select id="targetLanguage">
             <option value="en">English</option>
@@ -57,7 +64,7 @@
             <!-- Add more languages as needed -->
         </select>
     </div>
-    <div class="dictionary-feature">
+    <div class="dictionary-feature" id="dictionary-feature-line">
         <label for="dictionaryFeature">Dictionary feature: </label>
         <input type="checkbox" id="dictionaryFeature">
     </div>
