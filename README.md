@@ -30,6 +30,8 @@ Any suggestions and feedback are welcome.
 + 1.1: add target language translate when dictionary open
 + 1.2: fix bugs. 1) works on chatgpt.com 2) works on reddit comments 3) keep slience for special characters
 + 2.0: add features. 1) adding switch for this extension. 2) Making manually adjusted height persist.
++ 2.1: making front size stable
++ 2.2: fix bug. fix porblem that clicking selected text can not close pop window
 
 # TODO
 - [x] To make manually adjusted height of translate windows persist.
