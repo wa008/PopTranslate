@@ -1,6 +1,8 @@
 var window_id = -1;
 var previous_selection = "";
 var flag_update_shape_of_div = false;
+var flag_close_div_click = false;
+var mouse_down_time = new Date().getTime();
 
 const language_map = new Map([
     ["en", "English"],
@@ -164,6 +166,7 @@ function check_valid_selection(selection) {
 
 // trigger when mouse up
 window.addEventListener('mouseup', function (evt) {
+    mouse_up_time = new Date().getTime();
     var current_click_for_request = Date.now();
     if (flag_update_shape_of_div === true) {
         updateShapeOfDiv();
@@ -181,8 +184,13 @@ window.addEventListener('mouseup', function (evt) {
         selection = anchorNodeInnerText;
     }
     var seletion_flag = check_valid_selection(selection);
+    // console.log('mouse time diff: ', mouse_up_time, mouse_down_time, mouse_up_time - mouse_down_time);
     // console.log("seletion_flag: ", seletion_flag, "selection: ", selection);
-    if (seletion_flag === true && isInTargetDiv(evt) === false) {
+    if (seletion_flag === true && isInTargetDiv(evt) === false && 
+            (flag_close_div_click === false // this click for close div
+                || mouse_up_time - mouse_down_time >= 200 // this click for select text again, one click not double clicks
+            )
+        ) { 
         previous_selection = selection;
         (async() => {
             let extensionOn = await readLocalStorage('extensionOn', true);
@@ -223,6 +231,7 @@ window.addEventListener('mouseup', function (evt) {
 
 // close div when mouse up
 window.addEventListener('mousedown', function (evt) {
+    mouse_down_time = new Date().getTime();
     if (document.getElementById("my_overlay") === null) { // creat new div when there isn't, becuase chatGPT.com will delete my div, maybe this's related to generated website
         (async() => {
             CreateDiv();
@@ -231,8 +240,14 @@ window.addEventListener('mousedown', function (evt) {
     
     if (!isInTargetDiv(evt)) {
         flag_update_shape_of_div = false;
+        if (document.getElementById("my_overlay").style.display === "block") {
+            flag_close_div_click = true;
+        } else {
+            flag_close_div_click = false;
+        }
         removeOverlay();
     } else {
+        flag_close_div_click = false;
         flag_update_shape_of_div = true;
     }
 });
