@@ -50,6 +50,7 @@ async function CreateDiv() {
     div.style.boxShadow = "1px 1px 10px 5px gray" // 阴影
     div.innerHTML = "Loading...";
     document.body.insertBefore(div, document.body.firstChild);
+    document.getElementById("my_overlay").style.fontSize = 'medium';
 }
 
 if (document.getElementById("my_overlay") === undefined) {
