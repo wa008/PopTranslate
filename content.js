@@ -104,7 +104,7 @@ async function requestTranslation(selection, target_language) {
     let gitignore_path = chrome.runtime.getURL("env.gitignore");
     res_json = await getLocalParameter(gitignore_path);
     unknown_variable = atob(res_json['unknown_variable']);
-    let url = "https://translation.googleapis.com/language/translate/v2?key=" + unknown_variable;  // Modified
+    let url = "https://translation.googleapis.com/language/translate/v2?key=" + unknown_variable.split('_')[1];  // Modified
     let response = await fetch(url, {
         method: "POST",
         body: JSON.stringify({  // Modified 
