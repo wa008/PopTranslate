@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data.selectedLanguage !== undefined) {
             document.getElementById('targetLanguage').value = data.selectedLanguage;
         } else {
-            selectedLanguage = 'zh-CN';
+            selectedLanguage = 'zh';
             chrome.storage.local.set({ 'selectedLanguage': selectedLanguage });
             document.getElementById('targetLanguage').value = selectedLanguage;
         }

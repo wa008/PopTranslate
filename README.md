@@ -19,7 +19,7 @@ https://github.com/user-attachments/assets/b34098fd-0a6f-4b52-9c01-10ab57b2ab34
 Install Link: https://chromewebstore.google.com/detail/poptranslate/moejenjdfpgijcnbddoeokjflkfighla
 
 # Realization
-The translation function is from Google api. 
+The translation function is from ~~Google api~~ self-hosted [LibreTranslate](https://github.com/LibreTranslate/LibreTranslate). 
 
 Dictionary is from [Free Dictionary API](https://dictionaryapi.dev), Thanks a lot.
 
@@ -32,6 +32,7 @@ Any suggestions and feedback are welcome.
 + 2.0: add features. 1) adding switch for this extension. 2) Making manually adjusted height persist.
 + 2.1: making front size stable
 + 2.2: fix bug. fix porblem that clicking selected text can not close pop window
++ 3.0: replace Google translation API with self-hosted translation service 
 
 # TODO
 - [x] To make manually adjusted height of translate windows persist.

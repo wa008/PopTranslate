@@ -6,7 +6,7 @@ var mouse_down_time = new Date().getTime();
 
 const language_map = new Map([
     ["en", "English"],
-    ["zh-CN", "Chinese (Simplified)"],
+    ["zh", "Chinese (Simplified)"],
     ["es", "Spanish"],
     ["fr", "French"],
     ["de", "German"],
@@ -99,16 +99,22 @@ function updateShapeOfDiv() {
 }
 
 
-// request google api to get translation
+// request self-hosted service to get translation
 async function requestTranslation(selection, target_language) {
-    let gitignore_path = chrome.runtime.getURL("env.gitignore");
-    res_json = await getLocalParameter(gitignore_path);
-    unknown_variable = atob(res_json['unknown_variable']);
-    let url = "https://translation.googleapis.com/language/translate/v2?key=" + unknown_variable.split('_')[1];  // Modified
+    // let gitignore_path = chrome.runtime.getURL("env.gitignore");
+    // res_json = await getLocalParameter(gitignore_path);
+    // unknown_variable = atob(res_json['unknown_variable']);
+    // let url = "https://translation.googleapis.com/language/translate/v2?key=" + unknown_variable.split('_')[1];  // Modified
+
+    let url = "https://translate.informal.top";
     let response = await fetch(url, {
         method: "POST",
+	headers: {
+    	    "Content-Type": "application/json",
+ 	},
         body: JSON.stringify({  // Modified 
             target: target_language,
+	    source: "auto",
             q: selection
         }),
     });
@@ -198,10 +204,15 @@ window.addEventListener('mouseup', function (evt) {
                 return ;
             }
             // get language from local storage
-            var target_language = await readLocalStorage('selectedLanguage', 'zh-CN');
+            var target_language = await readLocalStorage('selectedLanguage', 'zh');
             let response_json = await requestTranslation(selection, target_language);
-            translation = response_json['data']['translations'][0]['translatedText'];
-            raw_language = response_json['data']['translations'][0]['detectedSourceLanguage'];
+            // translation = response_json['data']['translations'][0]['translatedText'];
+            // raw_language = response_json['data']['translations'][0]['detectedSourceLanguage'];
+            translation = response_json['translatedText'];
+	    if (translation.endsWith(".")) {
+		translation = translation.substring(0, translation.length - 1);
+	    }
+            raw_language = response_json['detectedLanguage']['language'];
 
             // single word
             if (!selection.includes(' ') && raw_language === 'en') {
