@@ -42,3 +42,4 @@ Any suggestions and feedback are welcome.
 
 # Thanks
 + [Free Dictionary API](https://dictionaryapi.dev)
++ [LibreTranslate](https://github.com/LibreTranslate/LibreTranslate)
