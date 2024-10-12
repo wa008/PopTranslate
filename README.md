@@ -39,6 +39,8 @@ Any suggestions and feedback are welcome.
 - [ ] Fix bugs: This is not a mature product, it need more time to find bug and fix them.
 - [ ] Add block option for specific website or domain, like github.
 - [ ] More languages support for dictionary: English is only language to support temporary.
+- [ ] Make dictionary result continuous scrolling
+
 
 # Thanks
 + [Free Dictionary API](https://dictionaryapi.dev)
