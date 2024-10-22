@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "PopTranslate",
-    "version": "3.0",
+    "version": "3.1",
     "description": "Instantly display translations by selecting text, no extra clicks needed, Making translation more intuitive and efficient.",
 
     "icons": {

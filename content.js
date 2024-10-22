@@ -170,6 +170,17 @@ function check_valid_selection(selection) {
     return true;
 }
 
+function getChineseRatio(str) {
+    const chineseRegex = /[\u4e00-\u9fa5]/g;
+    const chineseMatches = str.match(chineseRegex);
+    if (!chineseMatches) {
+        return 0;
+    }
+    const chineseCount = chineseMatches.length;
+    const totalCount = str.length;
+    return chineseCount / totalCount;
+}
+
 // trigger when mouse up
 window.addEventListener('mouseup', function (evt) {
     mouse_up_time = new Date().getTime();
@@ -189,6 +200,9 @@ window.addEventListener('mouseup', function (evt) {
     if (anchorNodeInnerText !== undefined && baseURI.includes('www.reddit.com')) { // speical process for reddit comment
         selection = anchorNodeInnerText;
     }
+
+    let chinese_ratio = getChineseRatio(selection);
+
     var seletion_flag = check_valid_selection(selection);
     // console.log('mouse time diff: ', mouse_up_time, mouse_down_time, mouse_up_time - mouse_down_time);
     // console.log("seletion_flag: ", seletion_flag, "selection: ", selection);
@@ -196,7 +210,7 @@ window.addEventListener('mouseup', function (evt) {
             (flag_close_div_click === false // this click for close div
                 || mouse_up_time - mouse_down_time >= 200 // this click for select text again, one click not double clicks
             )
-        ) { 
+        ) {
         previous_selection = selection;
         (async() => {
             let extensionOn = await readLocalStorage('extensionOn', true);
@@ -205,19 +219,22 @@ window.addEventListener('mouseup', function (evt) {
             }
             // get language from local storage
             var target_language = await readLocalStorage('selectedLanguage', 'zh');
-            let response_json = await requestTranslation(selection, target_language);
-            // translation = response_json['data']['translations'][0]['translatedText'];
-            // raw_language = response_json['data']['translations'][0]['detectedSourceLanguage'];
-            translation = response_json['translatedText'];
-	    if (translation.endsWith(".")) {
-		translation = translation.substring(0, translation.length - 1);
-	    }
-            raw_language = response_json['detectedLanguage']['language'];
+            let raw_language = 'en', translation = '';
+            if (target_language === 'zh' && chinese_ratio > 0.2) {
+                raw_language = 'zh';
+            } else {
+                let response_json = await requestTranslation(selection, target_language);
+                translation = response_json['translatedText'];
+                if (translation.endsWith(".")) {
+                    translation = translation.substring(0, translation.length - 1);
+                }
+                raw_language = response_json['detectedLanguage']['language'];
+            }
 
             // single word
             if (!selection.includes(' ') && raw_language === 'en') {
                 var dictionaryFeature = await readLocalStorage('dictionaryFeature', false);
-                // process single word
+                // process single word for dictionary
                 if (dictionaryFeature === true) {
                     openOverlay();
                     try {
