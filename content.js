@@ -106,6 +106,8 @@ async function requestTranslation(selection, target_language) {
     // unknown_variable = atob(res_json['unknown_variable']);
     // let url = "https://translation.googleapis.com/language/translate/v2?key=" + unknown_variable.split('_')[1];  // Modified
 
+    console.log("Requestting translate service...")
+
     let url = "https://translate.informal.top";
     let response = await fetch(url, {
         method: "POST",
@@ -156,9 +158,15 @@ async function get_output_from_word_translation(selection) {
 }
 
 function check_valid_selection(selection) {
+    // much numbers 
+    const digits = selection.match(/[\d\s\W]/g)?.join('') || "";
+    const digitPercentage = (digits.length / selection.length)
+    if (digitPercentage > 0.6) return false;
+
+    // special letter
     if (selection.length > 2) return true;
-    if (selection.length <= 0) return false;
-    selection.length > 0 && selection != ' '
+    if (selection.length <= 1) return false;
+    // selection.length > 0 && selection != ' '
     const spe_list = ["[", "`", "!", "@", "#", "$", "%", "^", "&", "*", 
         "(", ")", "_", "+", "-", "=", "[", "\\", "]", "{", "}", ";", "'", ":", '"', "|", ",", ".", 
         "<", ">", "/", "?", "~", "]", " "];
