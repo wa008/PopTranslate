@@ -34,6 +34,7 @@ Any suggestions and feedback are welcome.
 + 2.2: fix bug. fix porblem that clicking selected text can not close pop window
 + 3.0: replace Google translation API with self-hosted translation service 
 + 3.1: add speicial for chinese to reduce the pressure of service -- 2024.10.22
++ 3.2: don't translate for numbers -- 2024.10.23
 
 # TODO
 - [x] To make manually adjusted height of translate windows persist.
