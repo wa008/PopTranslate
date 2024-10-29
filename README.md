@@ -38,6 +38,7 @@ Any suggestions and feedback are welcome.
 
 # TODO
 - [x] To make manually adjusted height of translate windows persist.
+- [ ] Disable when selecting websites
 - [ ] Fix bugs: This is not a mature product, it need more time to find bug and fix them.
 - [ ] Add block option for specific website or domain, like github.
 - [ ] More languages support for dictionary: English is only language to support temporary.
