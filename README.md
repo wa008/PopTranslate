@@ -35,6 +35,7 @@ Any suggestions and feedback are welcome.
 + 3.0: replace Google translation API with self-hosted translation service 
 + 3.1: add speicial for chinese to reduce the pressure of service -- 2024.10.22
 + 3.2: don't translate for numbers -- 2024.10.23
++ 3.3: 1) update libertranslate into Gemini flash 2.0. 2) update check selection valid function -- 2024.12.27
 
 # TODO
 - [x] To make manually adjusted height of translate windows persist.

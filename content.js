@@ -157,23 +157,30 @@ async function get_output_from_word_translation(selection) {
 }
 
 function check_valid_selection(selection) {
-    // much numbers 
-    const digits = selection.match(/[\d\s\W]/g)?.join('') || "";
-    const digitPercentage = (digits.length / selection.length)
-    if (digitPercentage > 0.6) return false;
+    // match numbers 
+    const digits = selection.match(/[\d]/g)?.join('') || "";
 
     // special letter
-    if (selection.length > 2) return true;
     if (selection.length <= 1) return false;
+    spe_cnt = digits.length;
     // selection.length > 0 && selection != ' '
     const spe_list = ["[", "`", "!", "@", "#", "$", "%", "^", "&", "*", 
         "(", ")", "_", "+", "-", "=", "[", "\\", "]", "{", "}", ";", "'", ":", '"', "|", ",", ".", 
         "<", ">", "/", "?", "~", "]", " "];
-    for (const element of spe_list) {
-        if (selection.includes(element)) {
-            return false;
+    for (const element of selection) {
+        if (spe_list.includes(element)) {
+            if(selection.length <= 3) {
+                return false;
+            }
+            spe_cnt += 1;
         }
     }
+    const SpeChatPercentage = (spe_cnt / selection.length);
+    // console.log(SpeChatPercentage, selection.length, spe_cnt, digits.length);
+    if (selection.length >= 3 && SpeChatPercentage > 0.6) return false;
+    if (selection.length >= 5 && SpeChatPercentage > 0.5) return false;
+    if (selection.length >= 10 && SpeChatPercentage > 0.4) return false;
+    if (selection.length >= 20 && SpeChatPercentage > 0.3) return false;
     return true;
 }
 
