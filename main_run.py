@@ -32,7 +32,7 @@ def original_request():
         api_key=API_KEY
     )
     response = client.models.generate_content(
-        model='gemini-2.0-flash-exp', contents=f'Translate to {target_language} if needed; else output “”. Only the translation. Input: {contents}'
+        model='gemini-2.0-flash-exp', contents=f'Translate to {target_language} if not; else output “”. Only the translation. Input: {contents}'
     )
     print('output: ', response.text)
     result_text = response.text
