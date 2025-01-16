@@ -99,16 +99,19 @@ function updateShapeOfDiv() {
 }
 
 async function requestTranslation(selection, target_language) {
+    let gitignore_path = chrome.runtime.getURL("env.gitignore");
+    res_json = await getLocalParameter(gitignore_path);
+    key = res_json['key'];
     console.log("Requestting translate service...");
-    let response_json = await fetch(`https://translate-pa.googleapis.com/v1/translate?params.client=gtx&query.source_language=en&query.target_language=${target_language}&query.display_language=en-GB&query.text=${selection}&key=AIzaSyDLEeFI5OtFBwYBIoK_jj5m32rZK5CkCXA&data_types=TRANSLATION&data_types=SENTENCE_SPLITS&data_types=BILINGUAL_DICTIONARY_FULL`)
+    let response_json = await fetch(`https://translate-pa.googleapis.com/v1/translate?params.client=gtx&query.source_language=en&query.target_language=${target_language}&query.display_language=en-GB&query.text=${selection}&key=${key}&data_types=TRANSLATION&data_types=SENTENCE_SPLITS&data_types=BILINGUAL_DICTIONARY_FULL`)
         .then( response => response.json() );
 
     // let response_json = await response.json();
     translatedText = response_json['translation'];
     language = response_json['sourceLanguage'];
     output = {'translatedText': translatedText, 'detectedLanguage': {'language': language}}
-    console.log("response_json: ", response_json);
-    console.log("output: ", output);
+    // console.log("response_json: ", response_json);
+    // console.log("output: ", output);
     return output;
 }
 
