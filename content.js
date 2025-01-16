@@ -98,9 +98,22 @@ function updateShapeOfDiv() {
     chrome.storage.local.set({ 'heightOfDiv': current_related_height_str });
 }
 
+async function requestTranslation(selection, target_language) {
+    console.log("Requestting translate service...");
+    let response_json = await fetch(`https://translate-pa.googleapis.com/v1/translate?params.client=gtx&query.source_language=en&query.target_language=${target_language}&query.display_language=en-GB&query.text=${selection}&key=AIzaSyDLEeFI5OtFBwYBIoK_jj5m32rZK5CkCXA&data_types=TRANSLATION&data_types=SENTENCE_SPLITS&data_types=BILINGUAL_DICTIONARY_FULL`)
+        .then( response => response.json() );
+
+    // let response_json = await response.json();
+    translatedText = response_json['translation'];
+    language = response_json['sourceLanguage'];
+    output = {'translatedText': translatedText, 'detectedLanguage': {'language': language}}
+    console.log("response_json: ", response_json);
+    console.log("output: ", output);
+    return output;
+}
 
 // request self-hosted service to get translation
-async function requestTranslation(selection, target_language) {
+async function requestTranslationSelfHost(selection, target_language) {
     // let gitignore_path = chrome.runtime.getURL("env.gitignore");
     // res_json = await getLocalParameter(gitignore_path);
     // unknown_variable = atob(res_json['unknown_variable']);
@@ -115,7 +128,7 @@ async function requestTranslation(selection, target_language) {
         },
         body: JSON.stringify({  // Modified 
             target: target_language,
-	    source: "auto",
+	        source: "auto",
             q: selection
         }),
     });
