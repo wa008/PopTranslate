@@ -1,23 +1,7 @@
-var window_id = -1;
-var previous_selection = "";
 var flag_update_shape_of_div = false;
 var flag_close_div_click = false;
 var mouse_down_time = new Date().getTime();
 
-const language_map = new Map([
-    ["en", "English"],
-    ["zh", "Chinese (Simplified)"],
-    ["es", "Spanish"],
-    ["fr", "French"],
-    ["de", "German"],
-    ["ja", "Japanese"],
-    ["pt", "Portuguese"],
-    ["ru", "Russian"],
-    ["ar", "Arabic"],
-    ["ko", "Korean"],
-    ["it", "Italian"],
-    ["nl", "Dutch"]
-]);
 var last_click_for_reqeust = Date.now();
 
 // load local key
@@ -100,48 +84,24 @@ function updateShapeOfDiv() {
 
 async function requestTranslation(selection, target_language) {
     let gitignore_path = chrome.runtime.getURL("env.gitignore");
-    res_json = await getLocalParameter(gitignore_path);
-    key = res_json['key'];
+    let res_json = await getLocalParameter(gitignore_path);
+    let key = res_json['key'];
     console.log("Requestting translate service...");
     let response_json = await fetch(`https://translate-pa.googleapis.com/v1/translate?params.client=gtx&query.source_language=en&query.target_language=${target_language}&query.display_language=en-GB&query.text=${selection}&key=${key}&data_types=TRANSLATION&data_types=SENTENCE_SPLITS&data_types=BILINGUAL_DICTIONARY_FULL`)
         .then( response => response.json() );
 
     // let response_json = await response.json();
-    translatedText = response_json['translation'];
-    language = response_json['sourceLanguage'];
-    output = {'translatedText': translatedText, 'detectedLanguage': {'language': language}}
+    let translatedText = response_json['translation'];
+    let language = response_json['sourceLanguage'];
+    let output = {'translatedText': translatedText, 'detectedLanguage': {'language': language}}
     // console.log("response_json: ", response_json);
     // console.log("output: ", output);
     return output;
 }
 
-// request self-hosted service to get translation
-async function requestTranslationSelfHost(selection, target_language) {
-    // let gitignore_path = chrome.runtime.getURL("env.gitignore");
-    // res_json = await getLocalParameter(gitignore_path);
-    // unknown_variable = atob(res_json['unknown_variable']);
-    // let url = "https://translation.googleapis.com/language/translate/v2?key=" + unknown_variable.split('_')[1];  // Modified
-
-    console.log("Requestting translate service...");
-    let url = "https://translate.informal.top";
-    let response = await fetch(url, {
-        method: "POST",
-        headers: {
-                "Content-Type": "application/json",
-        },
-        body: JSON.stringify({  // Modified 
-            target: target_language,
-	        source: "auto",
-            q: selection
-        }),
-    });
-    let response_json = await response.json();
-    return response_json;
-}
-
 // read local parameter
 const readLocalStorage = async (key, default_value = undefined) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         chrome.storage.local.get([key], function (result) {
             if (result[key] === undefined) {
                 // reject();
@@ -160,7 +120,7 @@ async function get_output_from_word_translation(selection) {
     let response_json = await response.json();
 
     var output = "<b>" + selection + "&nbsp;" + response_json[0]['phonetic'] + "</b>" + "<br>"
-    limitation_per_partOfSpeech = 3;
+    let limitation_per_partOfSpeech = 3;
     for (var i = 0; i < response_json[0]['meanings'].length; i++) { 
         let currenct = response_json[0]['meanings'][i];
         for (var j = 0; j < Math.min(limitation_per_partOfSpeech, currenct['definitions'].length); j++) {
@@ -178,7 +138,7 @@ function check_valid_selection(selection) {
 
     // special letter
     if (selection.length <= 1) return false;
-    spe_cnt = digits.length;
+    let spe_cnt = digits.length;
     // selection.length > 0 && selection != ' '
     const spe_list = ["[", "`", "!", "@", "#", "$", "%", "^", "&", "*", 
         "(", ")", "_", "+", "-", "=", "[", "\\", "]", "{", "}", ";", "'", ":", '"', "|", ",", ".", 
@@ -220,7 +180,7 @@ window.addEventListener('mouseup', function (evt) {
     }
 
     mouse_up_timeout_id = setTimeout(function() {
-        mouse_up_time = new Date().getTime();
+        let mouse_up_time = new Date().getTime();
         var current_click_for_request = Date.now();
         if (flag_update_shape_of_div === true) {
             updateShapeOfDiv();
@@ -251,7 +211,6 @@ window.addEventListener('mouseup', function (evt) {
                     || mouse_up_time - mouse_down_time >= 200 // this click for select text again, one click not double clicks
                 )
             ) {
-            previous_selection = selection;
             (async() => {
                 let extensionOn = await readLocalStorage('extensionOn', true);
                 if (extensionOn !== true) {
@@ -281,7 +240,7 @@ window.addEventListener('mouseup', function (evt) {
                             let output = await get_output_from_word_translation(selection);
                             translation += "<br>" + output; // show target language && dictionary
                         }
-                        catch(err) {
+                        catch {
                             console.log('get localDictionaryFeature error');
                         }
                     }
