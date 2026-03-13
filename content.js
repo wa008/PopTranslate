@@ -211,80 +211,91 @@ function getChineseRatio(str) {
     return chineseCount / totalCount;
 }
 
+var mouse_up_timeout_id = null;
+
 // trigger when mouse up
 window.addEventListener('mouseup', function (evt) {
-    mouse_up_time = new Date().getTime();
-    var current_click_for_request = Date.now();
-    if (flag_update_shape_of_div === true) {
-        updateShapeOfDiv();
-    }
-    // console.log("window.getSelection(): ", window.getSelection());
-    // console.log("window.getSelection().tostring(): ", window.getSelection().toString());
-    // let {anchorNode, anchorOffset, focusNode, focusOffset} = window.getSelection();
-    // console.log(anchorNode);
-    // console.log("window.getSelection().anchorNode.innerText: ", window.getSelection().anchorNode.innerText);
-    // console.log("window.getSelection().anchorNode.baseURI: ", window.getSelection().anchorNode.baseURI);
-    let selection = window.getSelection().toString();
-    let baseURI = window.getSelection().anchorNode.baseURI;
-    let anchorNodeInnerText = window.getSelection().anchorNode.innerText;
-    if (anchorNodeInnerText !== undefined && baseURI.includes('www.reddit.com')) { // speical process for reddit comment
-        selection = anchorNodeInnerText;
+    if (mouse_up_timeout_id) {
+        clearTimeout(mouse_up_timeout_id);
     }
 
-    let chinese_ratio = getChineseRatio(selection);
+    mouse_up_timeout_id = setTimeout(function() {
+        mouse_up_time = new Date().getTime();
+        var current_click_for_request = Date.now();
+        if (flag_update_shape_of_div === true) {
+            updateShapeOfDiv();
+        }
+        // console.log("window.getSelection(): ", window.getSelection());
+        // console.log("window.getSelection().tostring(): ", window.getSelection().toString());
+        // let {anchorNode, anchorOffset, focusNode, focusOffset} = window.getSelection();
+        // console.log(anchorNode);
+        // console.log("window.getSelection().anchorNode.innerText: ", window.getSelection().anchorNode.innerText);
+        // console.log("window.getSelection().anchorNode.baseURI: ", window.getSelection().anchorNode.baseURI);
+        let selection = window.getSelection().toString();
 
-    var seletion_flag = check_valid_selection(selection);
-    // console.log('mouse time diff: ', mouse_up_time, mouse_down_time, mouse_up_time - mouse_down_time);
-    // console.log("seletion_flag: ", seletion_flag, "selection: ", selection);
-    if (seletion_flag === true && isInTargetDiv(evt) === false && 
-            (flag_close_div_click === false // this click for close div
-                || mouse_up_time - mouse_down_time >= 200 // this click for select text again, one click not double clicks
-            )
-        ) {
-        previous_selection = selection;
-        (async() => {
-            let extensionOn = await readLocalStorage('extensionOn', true);
-            if (extensionOn !== true) {
-                return ;
-            }
-            // get language from local storage
-            var target_language = await readLocalStorage('selectedLanguage', 'zh');
-            let raw_language = 'en', translation = '';
-            if (target_language === 'zh' && chinese_ratio > 0.2) {
-                raw_language = 'zh';
-            } else {
-                let response_json = await requestTranslation(selection, target_language);
-                translation = response_json['translatedText'];
-                if (translation.endsWith(".")) {
-                    translation = translation.substring(0, translation.length - 1);
+        let anchorNode = window.getSelection().anchorNode;
+        let baseURI = anchorNode ? anchorNode.baseURI : "";
+        let anchorNodeInnerText = anchorNode ? anchorNode.innerText : undefined;
+
+        if (anchorNodeInnerText !== undefined && baseURI.includes('www.reddit.com')) { // speical process for reddit comment
+            selection = anchorNodeInnerText;
+        }
+
+        let chinese_ratio = getChineseRatio(selection);
+
+        var seletion_flag = check_valid_selection(selection);
+        // console.log('mouse time diff: ', mouse_up_time, mouse_down_time, mouse_up_time - mouse_down_time);
+        // console.log("seletion_flag: ", seletion_flag, "selection: ", selection);
+        if (seletion_flag === true && isInTargetDiv(evt) === false &&
+                (flag_close_div_click === false // this click for close div
+                    || mouse_up_time - mouse_down_time >= 200 // this click for select text again, one click not double clicks
+                )
+            ) {
+            previous_selection = selection;
+            (async() => {
+                let extensionOn = await readLocalStorage('extensionOn', true);
+                if (extensionOn !== true) {
+                    return ;
                 }
-                raw_language = response_json['detectedLanguage']['language'];
-            }
+                // get language from local storage
+                var target_language = await readLocalStorage('selectedLanguage', 'zh');
+                let raw_language = 'en', translation = '';
+                if (target_language === 'zh' && chinese_ratio > 0.2) {
+                    raw_language = 'zh';
+                } else {
+                    let response_json = await requestTranslation(selection, target_language);
+                    translation = response_json['translatedText'];
+                    if (translation && translation.endsWith(".")) {
+                        translation = translation.substring(0, translation.length - 1);
+                    }
+                    raw_language = response_json['detectedLanguage']['language'];
+                }
 
-            // single word
-            if (!selection.includes(' ') && raw_language === 'en') {
-                var dictionaryFeature = await readLocalStorage('dictionaryFeature', false);
-                // process single word for dictionary
-                if (dictionaryFeature === true) {
+                // single word
+                if (!selection.includes(' ') && raw_language === 'en') {
+                    var dictionaryFeature = await readLocalStorage('dictionaryFeature', false);
+                    // process single word for dictionary
+                    if (dictionaryFeature === true) {
+                        openOverlay();
+                        try {
+                            let output = await get_output_from_word_translation(selection);
+                            translation += "<br>" + output; // show target language && dictionary
+                        }
+                        catch(err) {
+                            console.log('get localDictionaryFeature error');
+                        }
+                    }
+                }
+                // show
+                if (raw_language != target_language && current_click_for_request > last_click_for_reqeust) {
                     openOverlay();
-                    try {
-                        let output = await get_output_from_word_translation(selection);
-                        translation += "<br>" + output; // show target language && dictionary
-                    }
-                    catch(err) {
-                        console.log('get localDictionaryFeature error');
-                    }
+                    // let suffix = language_map.get(raw_language) + " -> " + language_map.get(target_language)
+                    document.getElementById("my_overlay").innerHTML = translation; // + "<br>" + suffix;
+                    last_click_for_reqeust = current_click_for_request;
                 }
-            }
-            // show
-            if (raw_language != target_language && current_click_for_request > last_click_for_reqeust) {
-                openOverlay();
-                // let suffix = language_map.get(raw_language) + " -> " + language_map.get(target_language)
-                document.getElementById("my_overlay").innerHTML = translation; // + "<br>" + suffix;
-                last_click_for_reqeust = current_click_for_request;
-            }
-        })();
-    }
+            })();
+        }
+    }, 10);
 });
 
 // close div when mouse up
