@@ -6,11 +6,13 @@ app = Flask(__name__)
 # Endpoint to receive POST requests
 @app.route('/translate', methods=['POST'])
 def translate_request():
+    last_exception = None
     for i in range(3): # retry
         try:
             return original_request()
         except Exception as e:
-            return jsonify({"error": "An error occurred", "details": str(e)}), 500
+            last_exception = e
+    return jsonify({"error": "An error occurred", "details": str(last_exception)}), 500
 
 
 def original_request():
