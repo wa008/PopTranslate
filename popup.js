@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data.selectedLanguage !== undefined) {
             document.getElementById('targetLanguage').value = data.selectedLanguage;
         } else {
-            selectedLanguage = 'zh';
+            let selectedLanguage = 'zh';
             chrome.storage.local.set({ 'selectedLanguage': selectedLanguage });
             document.getElementById('targetLanguage').value = selectedLanguage;
         }
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data.dictionaryFeature !== undefined) {
             document.getElementById('dictionaryFeature').checked = data.dictionaryFeature;
         } else {
-            dictionaryFeature = false;
+            let dictionaryFeature = false;
             chrome.storage.local.set({ 'dictionaryFeature': dictionaryFeature });
             document.getElementById('dictionaryFeature').checked = dictionaryFeature;
         }
@@ -25,13 +25,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data.extensionOn !== undefined) {
             document.getElementById('extensionOn').checked = data.extensionOn;
         } else {
-            extensionOn = true;
+            let extensionOn = true;
             chrome.storage.local.set({ 'extensionOn': extensionOn });
             document.getElementById('extensionOn').checked = extensionOn;
         }
-        language = document.getElementById("language-selection-line");
-        target_language = document.getElementById("targetLanguage");
-        dictionary = document.getElementById("dictionary-feature-line");
+        let language = document.getElementById("language-selection-line");
+        let target_language = document.getElementById("targetLanguage");
+        let dictionary = document.getElementById("dictionary-feature-line");
         if (document.getElementById('extensionOn').checked == true) {
             language.style.color = 'black';
             target_language.style.color = 'black';
@@ -61,9 +61,9 @@ document.getElementById('dictionaryFeature').addEventListener('change', function
 // extensionOn
 document.getElementById('extensionOn').addEventListener('change', function() {
     var extensionOn = this.checked;
-    language = document.getElementById("language-selection-line");
-    target_language = document.getElementById("targetLanguage");
-    dictionary = document.getElementById("dictionary-feature-line");
+    let language = document.getElementById("language-selection-line");
+    let target_language = document.getElementById("targetLanguage");
+    let dictionary = document.getElementById("dictionary-feature-line");
     if (extensionOn === false) {
         language.style.color = 'silver';
         target_language.style.color = 'silver';

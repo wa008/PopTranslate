@@ -55,7 +55,7 @@ async function CreateDiv() {
     document.getElementById("my_overlay").style.fontSize = 'medium';
 }
 
-if (document.getElementById("my_overlay") === undefined) {
+if (document.getElementById("my_overlay") === null) {
     (async() => {
         CreateDiv();
     })();
@@ -100,16 +100,16 @@ function updateShapeOfDiv() {
 
 async function requestTranslation(selection, target_language) {
     let gitignore_path = chrome.runtime.getURL("env.gitignore");
-    res_json = await getLocalParameter(gitignore_path);
-    key = res_json['key'];
+    let res_json = await getLocalParameter(gitignore_path);
+    let key = res_json['key'];
     console.log("Requestting translate service...");
     let response_json = await fetch(`https://translate-pa.googleapis.com/v1/translate?params.client=gtx&query.source_language=en&query.target_language=${target_language}&query.display_language=en-GB&query.text=${selection}&key=${key}&data_types=TRANSLATION&data_types=SENTENCE_SPLITS&data_types=BILINGUAL_DICTIONARY_FULL`)
         .then( response => response.json() );
 
     // let response_json = await response.json();
-    translatedText = response_json['translation'];
-    language = response_json['sourceLanguage'];
-    output = {'translatedText': translatedText, 'detectedLanguage': {'language': language}}
+    let translatedText = response_json['translation'];
+    let language = response_json['sourceLanguage'];
+    let output = {'translatedText': translatedText, 'detectedLanguage': {'language': language}}
     // console.log("response_json: ", response_json);
     // console.log("output: ", output);
     return output;
@@ -160,7 +160,7 @@ async function get_output_from_word_translation(selection) {
     let response_json = await response.json();
 
     var output = "<b>" + selection + "&nbsp;" + response_json[0]['phonetic'] + "</b>" + "<br>"
-    limitation_per_partOfSpeech = 3;
+    let limitation_per_partOfSpeech = 3;
     for (var i = 0; i < response_json[0]['meanings'].length; i++) { 
         let currenct = response_json[0]['meanings'][i];
         for (var j = 0; j < Math.min(limitation_per_partOfSpeech, currenct['definitions'].length); j++) {
@@ -178,7 +178,7 @@ function check_valid_selection(selection) {
 
     // special letter
     if (selection.length <= 1) return false;
-    spe_cnt = digits.length;
+    let spe_cnt = digits.length;
     // selection.length > 0 && selection != ' '
     const spe_list = ["[", "`", "!", "@", "#", "$", "%", "^", "&", "*", 
         "(", ")", "_", "+", "-", "=", "[", "\\", "]", "{", "}", ";", "'", ":", '"', "|", ",", ".", 
@@ -220,7 +220,7 @@ window.addEventListener('mouseup', function (evt) {
     }
 
     mouse_up_timeout_id = setTimeout(function() {
-        mouse_up_time = new Date().getTime();
+        let mouse_up_time = new Date().getTime();
         var current_click_for_request = Date.now();
         if (flag_update_shape_of_div === true) {
             updateShapeOfDiv();
